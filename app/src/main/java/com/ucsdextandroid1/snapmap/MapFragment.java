@@ -1,5 +1,6 @@
 package com.ucsdextandroid1.snapmap;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,19 +79,58 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),RecyclerView.HORIZONTAL,false));
 
-        UserLocationsAdapter adapter = new UserLocationsAdapter();
+        adapter = new UserLocationsAdapter();
 
         recyclerView.setAdapter(adapter);
 
-        DataSources.getInstance().getStaticUserLocations(new DataSources.Callback<List<UserLocationData>>() {
+ //       DataSources.getInstance().getActiveUserLocations(new DataSources.Callback<List<UserLocationData>>() {
+ //           @Override
+ //           public void onDataFetched(List<UserLocationData> data) {
+//
+ //               adapter.setItems(data);
+ //           }
+ //       });
+        //NEW end
+
+        updateAdapter();
+        updateUserLocation();
+
+        return root;
+    }
+
+    private void updateAdapter() {
+
+        DataSources.getInstance().getActiveUserLocations(new DataSources.Callback<List<UserLocationData>>() {
             @Override
             public void onDataFetched(List<UserLocationData> data) {
                 adapter.setItems(data);
             }
         });
-        //NEW end
+    }
 
-        return root;
+    private void updateUserLocation() {
+
+        String userId = "user_04";
+
+        UserLocationData locationData = new UserLocationData(
+                "#05688F", // or do color: #4527ao if not passing the value from string  //getString(R.color.test_color)
+                32.8248175,
+                -117.3891616,
+                "San Diego, CA",
+                 userId,
+                "Sheirman"
+        );
+
+        DataSources.getInstance().updateUser(userId, locationData, new DataSources.Callback<UserLocationData>() {
+            @Override
+            public void onDataFetched(UserLocationData data) {
+                Toast.makeText(getContext(), data != null ? "Success" : "Failure", Toast.LENGTH_SHORT)
+                        .show();
+
+                if(data != null)
+                    updateAdapter();
+            }
+        });
     }
 
     @Override

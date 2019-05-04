@@ -16,6 +16,7 @@ public class UserLocationData {
     @SerializedName("location_name")
     private String locationName;
     @SerializedName("user_id")
+    @RemoveFromJson   //add here because it is looking for userId when we ran into error
     private String userId;
     @SerializedName("user_name")
     private String userName;
@@ -53,4 +54,7 @@ public class UserLocationData {
         return userName;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }
